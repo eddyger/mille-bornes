@@ -1,0 +1,21 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+{% if games|length == 0 %}
+
+pas de parties en cours
+
+{% endif %}
+
+<table>
+{% for game in games %}
+<tr>
+  <td><a href="{{path('app_game_play', {id:game.id})}}">{{game.name}}</a></td>
+  <td>{{game.createdAt|date('Y-m-d H:i')}}</td>
+</tr>   
+  
+{% endfor %}
+</table>
+ 
+{% endblock %}

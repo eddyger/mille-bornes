@@ -1,0 +1,11 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+<p> play game {{ game.name}} :)</p>
+
+<div data-controller="play_controller" data-play_controller-url-value="{{ mercure(['#play-'~ game.id]) }}">
+  <!-- ... -->
+</div>
+
+{% endblock %}

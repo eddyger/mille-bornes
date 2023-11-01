@@ -2,22 +2,7 @@
 
 {% block body %}
 
-index
-
-<div id='message'>
-
-</div>
-{% endblock %}
-
-{% block javascripts %}
-<script>
-const eventSource = new EventSource("{{ mercure(['#time']) }}");
-
-eventSource.onmessage = event => {
-  let message = JSON.parse(event.data);
-    console.log(message);
-    document.getElementById('message').innerHTML = `${message.time}<br/>`;
-}
-</script>
+<p><a href="{{path('app_game_new')}}">Nouveau</a></p>
+<p><a href="{{path('app_game_list')}}">Browse</a></p>
 
 {% endblock %}
