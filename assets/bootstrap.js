@@ -8,4 +8,4 @@ export const app = startStimulusApp(require.context(
     /\.[jt]sx?$/
 ));
 // register any custom, 3rd party controllers here
-app.register('play_controller', PlayController);
+app.register('play-controller', PlayController);
