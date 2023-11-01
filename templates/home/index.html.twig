@@ -1,0 +1,23 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+
+index
+
+<div id='message'>
+
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+const eventSource = new EventSource("{{ mercure(['#time']) }}");
+
+eventSource.onmessage = event => {
+  let message = JSON.parse(event.data);
+    console.log(message);
+    document.getElementById('message').innerHTML = `${message.time}<br/>`;
+}
+</script>
+
+{% endblock %}
