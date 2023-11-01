@@ -14,8 +14,8 @@
         {% endblock %}
     </head>
     <body>
-    <nav class="crumbs">
-            <ol>
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+            <ul>
         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
             <li><a href="{{path('app_game_new')}}">Nouveau</a></li>
             <li><a href="{{path('app_game_list')}}">Browse</a></li>
@@ -23,7 +23,7 @@
             <li><a href="{{path('app_login')}}">Login</a></li>
             <li><a href="{{path('app_register')}}">Register</a></li>
         {% endif %} 
-            </ol>
+            </ul>
         </nav>
         {% block body %}{% endblock %}
     </body>

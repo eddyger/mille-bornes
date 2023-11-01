@@ -3,7 +3,12 @@
 {% block body %}
 
 {{ form_start(form)}}
-{{ form_widget(form.name) }}
+<div class="field">
+  <label class="label">Nom</label>
+  <div class="control">
+    {{ form_widget(form.name) }}
+  </div>
+</div>
 <button type='submit'>Créer</button>
 {{ form_end(form)}}
  
