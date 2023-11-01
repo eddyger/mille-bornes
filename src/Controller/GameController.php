@@ -42,8 +42,11 @@ class GameController extends AbstractController {
 
   #[Route('/play/{id}', name:'app_game_play')]
   public function play(int $id): Response {
-      
-    return $this->render('game/play.html.twig', ['game' => $this->gameService->findBydId($id)]);
+    $game = $this->gameService->joinGame($id,$this->getUser()); 
+    if (null === $game){
+      throw $this->createNotFoundException('Game not found');
+    } 
+    return $this->render('game/play.html.twig', ['game' => $game]);
 
   }
   
