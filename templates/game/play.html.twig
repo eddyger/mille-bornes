@@ -2,7 +2,9 @@
 
 {% block body %}
 
-<p> play game {{ game.name}} :)</p>
+<p> play game {{ game.name}}</p>
+
+<p> Nb players <span id='nb-players'>{{ game.players | length}}</span></p>
 
 <div data-controller="play-controller" data-play-controller-url-value="{{ mercure(['#play-'~ game.id]) }}">
   <!-- ... -->

@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: GameRepository::class)]
 class Game
 {
+    public const MAX_PLAYERS = 6;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Exception\MaxPlayerReachedException;
 use App\Form\NewGameFormType;
 use App\Service\GameService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -42,10 +43,16 @@ class GameController extends AbstractController {
 
   #[Route('/play/{id}', name:'app_game_play')]
   public function play(int $id): Response {
-    $game = $this->gameService->joinGame($id,$this->getUser()); 
-    if (null === $game){
-      throw $this->createNotFoundException('Game not found');
-    } 
+    try{
+      $game = $this->gameService->joinGame($id,$this->getUser()); 
+      if (null === $game){
+        throw $this->createNotFoundException('Game not found');
+      }
+    }catch(MaxPlayerReachedException $e){
+      $this->addFlash('error' , 'maximum players reached !!!');
+      return $this->redirectToRoute('app_home');
+    }
+     
     return $this->render('game/play.html.twig', ['game' => $game]);
 
   }

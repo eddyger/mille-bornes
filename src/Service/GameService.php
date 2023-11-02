@@ -6,6 +6,7 @@ namespace App\Service;
 use App\Entity\Game;
 use App\Entity\User;
 use App\Enum\GameState;
+use App\Exception\MaxPlayerReachedException;
 use App\Repository\GameRepository;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
@@ -41,18 +42,24 @@ class GameService {
   public function joinGame(int $id, User $user): ?Game{
     $game = $this->findBydId($id);
     if (null != $game){
-       $game->addPlayer($user);
-       $this->gameRepository->save($game); 
-       $update = new Update(
-        '#play-'.$game->getId(),
-        json_encode(
-          [
-            'event' => 'NewUserHasJoinedEvent',
-            'user'  => $user
-          ]
-        )
-       );
-       $this->hub->publish($update);
+       if ($game->getPlayers()->count() < Game::MAX_PLAYERS){
+        $game->addPlayer($user);
+        $this->gameRepository->save($game); 
+        $update = new Update(
+         '#play-'.$game->getId(),
+         json_encode(
+           [
+             'event' => 'NewUserHasJoinedEvent',
+             'user'  => $user,
+             'nbPlayers' => $game->getPlayers()->count()
+           ]
+         )
+        );
+        $this->hub->publish($update);
+       }else {
+         throw new MaxPlayerReachedException();
+       }
+       
     }
     return $game;
   }
