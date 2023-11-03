@@ -5,6 +5,13 @@
 <p> play game {{ game.name}}</p>
 
 <p> Nb players <span id='nb-players'>{{ game.players | length}}</span></p>
+{% if game.owner.id == app.user.id and game.state == 'open'  %}
+{% set nbPlayers = game.players|length %}
+  <p>
+    <button id="button-start-game" class="button is-primary" {{ nbPlayers < 2 ? 'disabled="disabled"' : '' }}>Start</button>  
+  </p>
+{% endif %}
+
 
 <div data-controller="play-controller" data-play-controller-url-value="{{ mercure(['#play-'~ game.id]) }}">
   <!-- ... -->
