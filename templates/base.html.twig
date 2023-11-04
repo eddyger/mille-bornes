@@ -14,6 +14,19 @@
         {% endblock %}
     </head>
     <body>
+        <section class="hero is-primary">
+      <div class="hero-body">
+        <div class="columns">
+          <div class="column is-12">
+            <div class="container content">
+              <i class="is-large fab fa-discord"></i>
+              <i class="is-large fas fa-code"></i>
+              <h1 class="title">1000 <em>bornes</em></h1>
+             </div>
+          </div>
+        </div>
+      </div>
+    </section>
         <nav class="breadcrumb" aria-label="breadcrumbs">
             <ul>
         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
@@ -25,16 +38,12 @@
         {% endif %} 
             </ul>
         </nav>
-        <section class="hero">
-        <div class="hero-body">
-            <p class="title">
-            1000 bornes
-            </p>
-            <p class="subtitle">
-            Enjoy
-            </p>
-        </div>
-        </section>
+        <section class="section">
+            <div class="container">
+                <div class="columns">
         {% block body %}{% endblock %}
+                </div>
+            </div>    
+        </section>
     </body>
 </html>
