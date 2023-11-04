@@ -3,10 +3,13 @@
 
 namespace App\Service;
 
+use App\DTO\AllocatedCard;
 use App\Entity\Game;
 use App\Entity\User;
 use App\Enum\GameState;
+use App\Exception\GameAlreadyStartException;
 use App\Exception\MaxPlayerReachedException;
+use App\Repository\CardRepository;
 use App\Repository\GameRepository;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
@@ -17,7 +20,8 @@ class GameService {
   public function __construct(
     protected readonly GameRepository $gameRepository, 
     protected readonly Security $security,
-    protected readonly HubInterface $hub
+    protected readonly HubInterface $hub,
+    protected readonly CardRepository $cardRepository
     )
   {
     
@@ -45,23 +49,85 @@ class GameService {
        if ($game->getPlayers()->count() < Game::MAX_PLAYERS){
         $game->addPlayer($user);
         $this->gameRepository->save($game); 
-        $update = new Update(
-         '#play-'.$game->getId(),
-         json_encode(
-           [
-             'event' => 'NewUserHasJoinedEvent',
-             'user'  => $user,
-             'nbPlayers' => $game->getPlayers()->count()
-           ]
-         )
+        $this->notifyPlayers(
+            $game->getId(),
+            [
+              'event' => 'NewUserHasJoinedEvent',
+              'user'  => $user,
+              'nbPlayers' => $game->getPlayers()->count()
+            ]
         );
-        $this->hub->publish($update);
        }else {
          throw new MaxPlayerReachedException();
        }
        
     }
     return $game;
+  }
+
+  public function startNewGame(Game $game){
+    if ($game->getState() === GameState::OPEN->value){
+      // 1. we load all the cards
+      $allCardsToPicks = $this->allocateCards($this->cardRepository->findAll());
+      
+      // 2. we shuffle the cards
+      $allCardsToPicks = $this->shuffle($allCardsToPicks);
+
+      // 3. Card distribution. We start with 6 cards by player
+      $distributionByUser = [];
+      for ($i = 1; $i <= 6 ; $i++){
+        foreach($game->getPlayers() as $player){
+          $distributionByUser[$player->getId()][] = array_pop($allCardsToPicks);
+        }
+      }
+
+      // 4. change game state
+      $game->setState(GameState::PLAY_IN_PROGRESS->value);
+      $this->gameRepository->save($game);
+
+      // 5. notify players
+      $this->notifyPlayers($game->getId(),[
+        'event' => 'GameIsStartedEvent',
+        'cardsByUser' => $distributionByUser
+      ]);
+
+    }else{
+      throw new GameAlreadyStartException();
+    }
+  }
+
+  /**
+   *
+   * @param $cards Card[] 
+   */
+  protected function  allocateCards($cards): array{
+    $allocatedCards = [];
+
+    foreach($cards as $card){
+      for ($i = 1 ; $i <= $card->getNumberInGame() ; $i++){
+        $allocatedCards[] = new AllocatedCard($card); 
+      }
+    }
+
+    return $allocatedCards;
+  }
+
+  protected function shuffle($cards): array{
+    $keys = array_keys($cards);
+    shuffle($keys);
+    $shuffledCards = [];
+    foreach($keys as $key){
+      $shuffledCards[] = $cards[$key];
+    }
+
+    return $shuffledCards;
+  }
+
+  protected function notifyPlayers(int $gameId, mixed $message): void{
+
+    $update = new Update('#play-'.$gameId,json_encode($message));
+    $this->hub->publish($update);
+
   }
 
 }

@@ -13,8 +13,9 @@ export default class extends Controller {
         if (message.event === 'NewUserHasJoinedEvent'){
             let nbPlayers = message.nbPlayers;
             document.getElementById('nb-players').innerText = nbPlayers;
-            if (nbPlayers >= 2){
-                document.getElementById('button-start-game').disabled = false;
+            let buttonStart = document.getElementById('button-start-game');
+            if (nbPlayers >= 2 && buttonStart ){
+              buttonStart.disabled = false;
             }
         }  
     }

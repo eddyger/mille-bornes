@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Exception\GameAlreadyStartException;
 use App\Exception\MaxPlayerReachedException;
 use App\Form\NewGameFormType;
 use App\Service\GameService;
@@ -50,12 +51,28 @@ class GameController extends AbstractController {
       }
     }catch(MaxPlayerReachedException $e){
       $this->addFlash('error' , 'maximum players reached !!!');
-      return $this->redirectToRoute('app_home');
+      return $this->redirectToRoute('app_game_list');
     }
      
     return $this->render('game/play.html.twig', ['game' => $game]);
 
   }
   
+  #[Route('/start/{id}', name:'app_game_start')]
+  public function start(int $id): Response {
+    try{
+      $game = $this->gameService->findBydId($id); 
+      if (null === $game){
+        throw $this->createNotFoundException('Game not found');
+      }
+      $this->gameService->startNewGame($game);
+    }catch(GameAlreadyStartException $e){
+      $this->addFlash('error' , 'game is already started !!!');
+      return $this->redirectToRoute('app_game_list');
+    }
+     
+    return $this->render('game/play.html.twig', ['game' => $game]);
+
+  }
 
 }

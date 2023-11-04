@@ -8,7 +8,7 @@
 {% if game.owner.id == app.user.id and game.state == 'open'  %}
 {% set nbPlayers = game.players|length %}
   <p>
-    <button id="button-start-game" class="button is-primary" {{ nbPlayers < 2 ? 'disabled="disabled"' : '' }}>Start</button>  
+    <a href="{{ path('app_game_start', {id: game.id}) }}" id="button-start-game" class="button is-primary" {{ nbPlayers < 2 ? 'disabled="disabled"' : '' }}>Start</a>  
   </p>
 {% endif %}
 
