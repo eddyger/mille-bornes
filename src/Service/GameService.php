@@ -65,7 +65,7 @@ class GameService {
     return $game;
   }
 
-  public function startNewGame(Game $game){
+  public function startNewGame(Game $game): array{
     if ($game->getState() === GameState::OPEN->value){
       // 1. we load all the cards
       $allCardsToPicks = $this->allocateCards($this->cardRepository->findAll());
@@ -90,6 +90,8 @@ class GameService {
         'event' => 'GameIsStartedEvent',
         'cardsByUser' => $distributionByUser
       ]);
+
+      return $distributionByUser;
 
     }else{
       throw new GameAlreadyStartException();

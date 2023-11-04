@@ -65,14 +65,13 @@ class GameController extends AbstractController {
       if (null === $game){
         throw $this->createNotFoundException('Game not found');
       }
-      $this->gameService->startNewGame($game);
+      $distributedCardsByUser = $this->gameService->startNewGame($game);
+      return $this->render('game/play.html.twig', ['game' => $game, 'distributedCardsByUser' => $distributedCardsByUser]);
     }catch(GameAlreadyStartException $e){
       $this->addFlash('error' , 'game is already started !!!');
       return $this->redirectToRoute('app_game_list');
     }
-     
-    return $this->render('game/play.html.twig', ['game' => $game]);
-
+    
   }
 
 }

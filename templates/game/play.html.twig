@@ -12,8 +12,28 @@
   </p>
 {% endif %}
 
+{% if distributedCardsByUser is defined %}
+  {% for player , cards in distributedCardsByUser %}
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+        PLAYER = {{ player }}
+        </p>
+      </header>
+      <div class="card-content">
+        <div class="content">
+          {% for card in cards %}
+            ---{{ app.user.id == player ? card : 'BACK CARD' }}---
+          {% endfor %}
+        </div>
+      </div>    
+    </div>
+  {% endfor %}
+{% endif %}
 
-<div data-controller="play-controller" data-play-controller-url-value="{{ mercure(['#play-'~ game.id]) }}">
+
+
+<div data-controller="play-controller" data-play-controller-url-value="{{ mercure(['#play-'~ game.id]) }}" data-play-controller-user-value="{{ app.user.id }}">
   <!-- ... -->
 </div>
 

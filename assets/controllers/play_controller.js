@@ -9,7 +9,7 @@ export default class extends Controller {
     // connectStreamSource(this.es);
     this.es.onmessage = event => {
         let message = JSON.parse(event.data);
-          console.log(message);
+        console.log(message);
         if (message.event === 'NewUserHasJoinedEvent'){
             let nbPlayers = message.nbPlayers;
             document.getElementById('nb-players').innerText = nbPlayers;
@@ -17,7 +17,12 @@ export default class extends Controller {
             if (nbPlayers >= 2 && buttonStart ){
               buttonStart.disabled = false;
             }
-        }  
+        }
+
+        if (message.event === 'GameIsStartedEvent'){
+          
+        }
+
     }
       
    }

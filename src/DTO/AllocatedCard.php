@@ -12,4 +12,8 @@ class AllocatedCard{
     return $this->card;
   }
 
+  public function __toString()
+  {
+    return $this->card?->getCode();
+  }
 }
