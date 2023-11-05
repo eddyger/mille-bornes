@@ -25,3 +25,8 @@ ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN echo "export PATH=/root/.nvm/versions/node/v${NODE_VERSION}/bin/:\${PATH}" >> ~/.bashrc
 RUN node --version
 RUN npm --version
+
+#------- Redis
+RUN pecl install --force redis \
+    && rm -rf /tmp/pear \
+    && docker-php-ext-enable redis

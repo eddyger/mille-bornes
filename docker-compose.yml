@@ -22,6 +22,15 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - mysql_data:/var/lib/mysql
+  
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
 
 ###> symfony/mercure-bundle ###
   mercure:
@@ -44,6 +53,7 @@ services:
 ###< symfony/mercure-bundle ###
 
 volumes:
+  cache:
   mysql_data:   
 ###> symfony/mercure-bundle ###
   mercure_data:

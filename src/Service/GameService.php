@@ -14,6 +14,8 @@ use App\Repository\GameRepository;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class GameService {
 
@@ -21,7 +23,8 @@ class GameService {
     protected readonly GameRepository $gameRepository, 
     protected readonly Security $security,
     protected readonly HubInterface $hub,
-    protected readonly CardRepository $cardRepository
+    protected readonly CardRepository $cardRepository,
+    protected readonly CacheInterface $cache
     )
   {
     
@@ -84,6 +87,10 @@ class GameService {
       // 4. change game state
       $game->setState(GameState::PLAY_IN_PROGRESS->value);
       $this->gameRepository->save($game);
+
+      $this->cache->get('play#'.$game->getId(), function(ItemInterface $item) use ($game){
+        return $game;
+      });
 
       // 5. notify players
       $this->notifyPlayers($game->getId(),[
