@@ -4,6 +4,7 @@
 namespace App\Service;
 
 use App\DTO\AllocatedCard;
+use App\Engine\GameEngine;
 use App\Entity\Game;
 use App\Entity\User;
 use App\Enum\GameState;
@@ -11,6 +12,7 @@ use App\Exception\GameAlreadyStartException;
 use App\Exception\MaxPlayerReachedException;
 use App\Repository\CardRepository;
 use App\Repository\GameRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Security\Core\Security;
@@ -24,7 +26,8 @@ class GameService {
     protected readonly Security $security,
     protected readonly HubInterface $hub,
     protected readonly CardRepository $cardRepository,
-    protected readonly CacheInterface $cache
+    protected readonly CacheInterface $cache,
+    protected readonly LoggerInterface $logger
     )
   {
     
@@ -71,25 +74,28 @@ class GameService {
   public function startNewGame(Game $game): array{
     if ($game->getState() === GameState::OPEN->value){
       // 1. we load all the cards
-      $allCardsToPicks = $this->allocateCards($this->cardRepository->findAll());
+      $allCardsInDeck = $this->allocateCards($this->cardRepository->findAll());
       
       // 2. we shuffle the cards
-      $allCardsToPicks = $this->shuffle($allCardsToPicks);
+      $allCardsInDeck = $this->shuffle($allCardsInDeck);
 
       // 3. Card distribution. We start with 6 cards by player
       $distributionByUser = [];
       for ($i = 1; $i <= 6 ; $i++){
         foreach($game->getPlayers() as $player){
-          $distributionByUser[$player->getId()][] = array_pop($allCardsToPicks);
+          $distributionByUser[$player->getId()][] = array_pop($allCardsInDeck);
         }
       }
+
+      // GameEngine intitialisation
+      $engine = new GameEngine($game, $allCardsInDeck, $distributionByUser);
 
       // 4. change game state
       $game->setState(GameState::PLAY_IN_PROGRESS->value);
       $this->gameRepository->save($game);
 
-      $this->cache->get('play#'.$game->getId(), function(ItemInterface $item) use ($game){
-        return $game;
+      $this->cache->get('play#'.$game->getId(), function(ItemInterface $item) use ($engine){
+        return $engine;
       });
 
       // 5. notify players
@@ -102,6 +108,18 @@ class GameService {
 
     }else{
       throw new GameAlreadyStartException();
+    }
+  }
+
+  public function takeCardInDeck(int $gameId, int $playerId){
+    $game = $this->findBydId($gameId);
+    /** @var $engine Engine */
+    $engine = $this->cache->get('play#'.$game->getId(), function(ItemInterface $item){
+      return null;
+    });
+
+    if (null !== $engine){
+       $card = $engine->takeCardInDeck($playerId); 
     }
   }
 
@@ -133,8 +151,8 @@ class GameService {
   }
 
   protected function notifyPlayers(int $gameId, mixed $message): void{
-
-    $update = new Update('#play-'.$gameId,json_encode($message));
+    $this->logger->debug(json_encode($message, JSON_FORCE_OBJECT));
+    $update = new Update('#play-'.$gameId,json_encode($message,JSON_FORCE_OBJECT));
     $this->hub->publish($update);
 
   }
