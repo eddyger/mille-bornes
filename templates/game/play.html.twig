@@ -12,18 +12,18 @@
   </p>
 {% endif %}
 
-{% if distributedCardsByUser is defined %}
-  {% for player , cards in distributedCardsByUser %}
+{% if engine is defined %}
+  {% for player in engine.players %}
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">
-        PLAYER = {{ player }}
+        PLAYER = {{ player.id }}
         </p>
       </header>
       <div class="card-content">
         <div class="content">
-          {% for card in cards %}
-            ---{{ app.user.id == player ? card : 'BACK CARD' }}---
+          {% for card in player.getCardInHands() %}
+            ---{{ app.user.id == player.id ? card : 'BACK CARD' }}---
           {% endfor %}
         </div>
       </div>    

@@ -71,7 +71,7 @@ class GameService {
     return $game;
   }
 
-  public function startNewGame(Game $game): array{
+  public function startNewGame(Game $game): GameEngine {
     if ($game->getState() === GameState::OPEN->value){
       // 1. we load all the cards
       $allCardsInDeck = $this->allocateCards($this->cardRepository->findAll());
@@ -104,10 +104,18 @@ class GameService {
         'cardsByUser' => $distributionByUser
       ]);
 
-      return $distributionByUser;
+      return $engine;
 
     }else{
-      throw new GameAlreadyStartException();
+      if ($game->getState() === GameState::PLAY_IN_PROGRESS->value){
+        /** @var $engine Engine */
+        $engine = $this->cache->get('play#'.$game->getId(), function(ItemInterface $item){
+          return null;
+        });
+        if (null !== $engine){
+          return $engine;
+        }
+      }
     }
   }
 

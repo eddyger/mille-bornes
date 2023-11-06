@@ -64,4 +64,8 @@ class GameEngine {
     throw new NotPlayerTurnException();
   }
 
+  public function getPlayers() : array {
+    return $this->players;
+  }
+
 }

@@ -36,14 +36,14 @@ class GameController extends AbstractController {
 
     if ($gameForm->isSubmitted() && $gameForm->isValid()){
       $game = $this->gameService->createGame($gameForm->getData());
-      return $this->redirectToRoute('app_game_play', ['id' => $game->getId()]);
+      return $this->redirectToRoute('app_game_join', ['id' => $game->getId()]);
     }
 
     return $this->renderForm('game/new.html.twig', ['form' => $gameForm]);
   }
 
-  #[Route('/play/{id}', name:'app_game_play')]
-  public function play(int $id): Response {
+  #[Route('/join/{id}', name:'app_game_join')]
+  public function join(int $id): Response {
     try{
       $game = $this->gameService->joinGame($id,$this->getUser()); 
       if (null === $game){
@@ -65,8 +65,8 @@ class GameController extends AbstractController {
       if (null === $game){
         throw $this->createNotFoundException('Game not found');
       }
-      $distributedCardsByUser = $this->gameService->startNewGame($game);
-      return $this->render('game/play.html.twig', ['game' => $game, 'distributedCardsByUser' => $distributedCardsByUser]);
+      $engine = $this->gameService->startNewGame($game);
+      return $this->render('game/play.html.twig', ['game' => $game, 'engine' => $engine]);
     }catch(GameAlreadyStartException $e){
       $this->addFlash('error' , 'game is already started !!!');
       return $this->redirectToRoute('app_game_list');

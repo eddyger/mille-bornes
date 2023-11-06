@@ -11,10 +11,10 @@ pas de parties en cours
 <table>
 {% for game in games %}
 <tr>
-  <td><a href="{{path('app_game_play', {id:game.id})}}">{{game.name}}</a></td>
+  <td>{{game.name}}</td>
   <td>{{game.createdAt|date('Y-m-d H:i')}}</td>
+  <td><a class='button' href="{{path('app_game_join', {id:game.id})}}">Join</a></td>
 </tr>   
-  
 {% endfor %}
 </table>
  

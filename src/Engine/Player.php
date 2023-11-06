@@ -31,4 +31,7 @@ class Player{
     $this->cardInHands[] = $card;
   }
   
+  public function getCardInHands(): array {
+    return $this->cardInHands;
+  }
 }
