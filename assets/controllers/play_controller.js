@@ -20,7 +20,7 @@ export default class extends Controller {
         }
 
         if (message.event === 'GameIsStartedEvent'){
-          
+          document.location.href = document.getElementById('nb-players').getAttribute('data-start-url'); 
         }
 
     }

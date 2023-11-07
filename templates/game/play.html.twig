@@ -4,7 +4,7 @@
 
 <p> play game {{ game.name}}</p>
 
-<p> Nb players <span id='nb-players'>{{ game.players | length}}</span></p>
+<p> Nb players <span id='nb-players' data-start-url='{{ path('app_game_start', {id: game.id}) }}'>{{ game.players | length}}</span></p>
 {% if game.owner.id == app.user.id and game.state == 'open'  %}
 {% set nbPlayers = game.players|length %}
   <p>
