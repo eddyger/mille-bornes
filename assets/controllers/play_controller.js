@@ -1,4 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
+import { Droppable } from '@shopify/draggable';
+
 // import { connectStreamSource, disconnectStreamSource } from "@hotwired/turbo";
 
 export default class extends Controller {
@@ -24,6 +26,20 @@ export default class extends Controller {
         }
 
     }
+
+    document.addEventListener('DOMContentLoaded', function (){
+      const droppable = new Droppable(
+          document.querySelectorAll('.container'),
+          {
+              draggable: '.item',
+              dropzone: '.dropzone',
+          },
+      );
+
+      droppable.on('droppable:dropped', () => console.log('droppable:dropped'));
+      droppable.on('droppable:returned', () => console.log('droppable:returned'));
+  });
+
       
    }
 

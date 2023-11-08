@@ -22,13 +22,22 @@
       </header>
       <div class="card-content">
         <div class="content">
+         <div class="container">
           {% for card in player.getCardInHands() %}
+            <div class="{{ app.user.id == player.id ? 'dropzone draggable-dropzone--occupied' : ''}}">
+              <div class="item">
             ---{{ app.user.id == player.id ? card : 'BACK CARD' }}---
+              </div>
+            </div> 
           {% endfor %}
+         </div> 
         </div>
       </div>    
     </div>
   {% endfor %}
+  <div class="container">
+    <div class="dropzone">PLAY CARD HERE</div>
+  </div>
 {% endif %}
 
 
