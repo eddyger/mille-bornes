@@ -1,6 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { Droppable } from '@shopify/draggable';
-import {renderStreamMessage, visit} from '@hotwired/turbo';
+import * as Turbo from '@hotwired/turbo';
 
 // import { connectStreamSource, disconnectStreamSource } from "@hotwired/turbo";
 
@@ -22,15 +22,17 @@ export default class extends Controller {
             }
         }
 
-        if (message.event === 'GameIsStartedEvent' || message.event === 'PlayerHavePlayedEvent' ){
-          visit(window.location);
-          //document.location.href = document.getElementById('nb-players').getAttribute('data-start-url'); 
+        if (message.event === 'GameIsStartedEvent'){
+          Turbo.visit(document.getElementById('nb-players').getAttribute('data-start-url')); 
+        }
+
+        if (message.event === 'PlayerHavePlayedEvent' ){
+          Turbo.visit(window.location);
         }
 
     }
     var _self = this;
-      
-    document.addEventListener('DOMContentLoaded', function (){
+    let pageOnloadHandler = function (){
       const droppable = new Droppable(
           document.querySelectorAll('.container'),
           {
@@ -57,9 +59,12 @@ export default class extends Controller {
           _self.playCards(event.target.href);
         });
       }
-
       
-    });
+    };
+
+    document.addEventListener('DOMContentLoaded', pageOnloadHandler);
+    document.addEventListener('turbo:load', pageOnloadHandler);
+
    }
 
   async playCards(url)
@@ -89,9 +94,7 @@ export default class extends Controller {
     });
 
     const text = await response.text();
-    renderStreamMessage(text);
-      
-
+    Turbo.renderStreamMessage(text);
       
     console.log(url);
   }

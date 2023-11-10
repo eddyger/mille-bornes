@@ -38,7 +38,7 @@
          
           {% for card in player.getCardInHands() %}
             <div class="{{ app.user.id == player.id ? 'dropzone draggable-dropzone--occupied' : ''}}">
-              <div class="item" data-code={{card}}>
+              <div class="item" data-code='{{card}}'>
             ---{{ app.user.id == player.id ? card : 'BACK CARD' }}---
               </div>
             </div> 
@@ -58,7 +58,7 @@
     </div>
     <div class="container">
       <div id='trash' class="dropzone trash">
-      <img src="{{ asset('build/images/trash.png')}}" />
+      <!--<img src="{{ asset('build/images/trash.png')}}" />-->
       </div>
     </div>
   </turbo>
