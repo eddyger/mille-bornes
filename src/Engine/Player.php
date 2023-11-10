@@ -3,6 +3,7 @@
 namespace App\Engine;
 
 use App\DTO\AllocatedCard;
+use App\Exception\CardNotFoundException;
 
 class Player{
 
@@ -33,5 +34,16 @@ class Player{
   
   public function getCardInHands(): array {
     return $this->cardInHands;
+  }
+
+  public function removeCardInHand(string $cardCode): AllocatedCard {
+    foreach($this->cardInHands as $key => $card){
+      if ((string)$card === $cardCode){
+        unset($this->cardInHands[$key]);
+        return $card;
+      }
+    }
+   throw new CardNotFoundException();
+  
   }
 }

@@ -13,6 +13,13 @@
 {% endif %}
 
 {% if engine is defined %}
+  <p>
+  <turbo-frame id='button-take-card-frame'>
+    <a href="{{ path('app_game_take_card_in_deck', {id: game.id}) }}" id="button-take-card" class="button is-primary">Take card in deck</a>  
+  </turbo>
+  
+  </p>
+  
   {% for player in engine.players %}
     <div class="card">
       <header class="card-header">
@@ -23,6 +30,10 @@
       <div class="card-content">
         <div class="content">
          <div class="container">
+         {% if app.user.id == player.id %}
+         <turbo-frame id='player-cards'>
+         {% endif %}
+         
           {% for card in player.getCardInHands() %}
             <div class="{{ app.user.id == player.id ? 'dropzone draggable-dropzone--occupied' : ''}}">
               <div class="item">
@@ -30,14 +41,24 @@
               </div>
             </div> 
           {% endfor %}
+           {% if app.user.id == player.id %}
+         </turbo-frame>
+         {% endif %}
+        
          </div> 
         </div>
       </div>    
     </div>
   {% endfor %}
   <div class="container">
-    <div class="dropzone">PLAY CARD HERE</div>
+    <div class="dropzone table"></div>
   </div>
+  <div class="container">
+    <div class="dropzone trash">
+    <img src="{{ asset('build/images/trash.png')}}" />
+    </div>
+  </div>
+  
 {% endif %}
 
 

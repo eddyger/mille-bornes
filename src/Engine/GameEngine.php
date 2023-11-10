@@ -4,11 +4,14 @@ namespace App\Engine;
 
 use App\DTO\AllocatedCard;
 use App\Entity\Game;
+use App\Exception\CardNotFoundException;
 use App\Exception\NotPlayerTurnException;
+use App\Exception\TooManyCardsInHandsException;
 
 class GameEngine {
 
   public const DISTANCE_TO_REACH = 1000; 
+  public const MAX_CARDS_IN_HANDS = 7; // maximum 7 cards in hands before play
   protected int $id;
   protected array $cardsDeck;
   protected $players = [];
@@ -57,11 +60,22 @@ class GameEngine {
   public function takeCardInDeck(int $playerId): AllocatedCard{
     $currentPlayer = $this->getCurrentPlayer();
     if ($currentPlayer->getId() === $playerId){
+      if (\count($currentPlayer->getCardInHands()) >= self::MAX_CARDS_IN_HANDS){
+       throw new TooManyCardsInHandsException();
+      }
       $card = array_pop($this->cardsDeck);
       $currentPlayer->addCardInHand($card);
       return $card;
     }
     throw new NotPlayerTurnException();
+  }
+
+  public function trashCard(int $playerId, string $cardCode): void{
+    $currentPlayer = $this->getCurrentPlayer();
+    if ($currentPlayer->getId() === $playerId){
+      $card = $currentPlayer->removeCardInHand($cardCode);
+      array_unshift($this->cardsDeck, $card);
+    }
   }
 
   public function getPlayers() : array {

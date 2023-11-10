@@ -36,8 +36,15 @@ export default class extends Controller {
           },
       );
 
-      droppable.on('droppable:dropped', () => console.log('droppable:dropped'));
-      droppable.on('droppable:returned', () => console.log('droppable:returned'));
+      droppable.on('droppable:dropped', (event) => {
+        console.log('droppable:dropped')
+        console.log(event);
+      });
+      droppable.on('droppable:returned', (event) => console.log('droppable:returned'));
+      droppable.on("drag:stop", event => { 
+        console.log('drag:stop')
+        console.log(event.source.parentNode);
+      } );
   });
 
       

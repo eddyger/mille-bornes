@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Enum\GameState;
 use App\Exception\GameAlreadyStartException;
 use App\Exception\MaxPlayerReachedException;
+use App\Exception\MemoryException;
 use App\Repository\CardRepository;
 use App\Repository\GameRepository;
 use Psr\Log\LoggerInterface;
@@ -119,16 +120,23 @@ class GameService {
     }
   }
 
-  public function takeCardInDeck(int $gameId, int $playerId){
+  public function takeCardInDeck(int $gameId, User $user): AllocatedCard{
     $game = $this->findBydId($gameId);
-    /** @var $engine Engine */
+    /** @var Engine $engine  */
     $engine = $this->cache->get('play#'.$game->getId(), function(ItemInterface $item){
       return null;
     });
 
     if (null !== $engine){
-       $card = $engine->takeCardInDeck($playerId); 
+       $card = $engine->takeCardInDeck($user->getId());
+       // Save engine state
+       $this->cache->get('play#'.$game->getId(), function(ItemInterface $item) use($engine){
+        return $engine;
+      },INF);
+
+       return $card;
     }
+    throw new MemoryException();
   }
 
   /**

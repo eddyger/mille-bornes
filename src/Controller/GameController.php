@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Exception\GameAlreadyStartException;
 use App\Exception\MaxPlayerReachedException;
+use App\Exception\MemoryException;
 use App\Form\NewGameFormType;
 use App\Service\GameService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -73,5 +74,24 @@ class GameController extends AbstractController {
     }
     
   }
+
+  #[Route('/take-card-in-deck/{id}', name:'app_game_take_card_in_deck')]
+  public function takeCardInDeck(int $id): Response {
+    try{
+      $game = $this->gameService->findBydId($id); 
+      if (null === $game){
+        throw $this->createNotFoundException('Game not found');
+      }
+      $card = $this->gameService->takeCardInDeck($id, $this->getUser());
+      $response = new Response(null,200,['Content-type' => 'text/vnd.turbo-stream.html']);
+      return $this->render('game/newcard.stream.html.twig', ['game' => $game, 'card' => $card],$response);
+    }catch(MemoryException $e){
+      $this->addFlash('error' , 'game is unplayable due to memory exception !!!');
+      return $this->redirectToRoute('app_game_list');
+    }
+    
+  }
+
+
 
 }
