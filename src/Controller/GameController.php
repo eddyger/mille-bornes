@@ -82,9 +82,35 @@ class GameController extends AbstractController {
       if (null === $game){
         throw $this->createNotFoundException('Game not found');
       }
-      $card = $this->gameService->takeCardInDeck($id, $this->getUser());
+      $card = $this->gameService->takeCardInDeck($game, $this->getUser());
       $response = new Response(null,200,['Content-type' => 'text/vnd.turbo-stream.html']);
       return $this->render('game/newcard.stream.html.twig', ['game' => $game, 'card' => $card],$response);
+    }catch(MemoryException $e){
+      $this->addFlash('error' , 'game is unplayable due to memory exception !!!');
+      return $this->redirectToRoute('app_game_list');
+    }
+    
+  }
+
+  #[Route('/play-cards/{id}', name:'app_game_play_cards', methods:['POST'])]
+  public function playCards(int $id, Request $request): Response {
+    // We can play two cards
+    // Case 1: 1 card in trash , 1 card in table
+    // Case 2: 1 card in trash , 1 card in opponent table attack
+    /* Json body : {
+        'trash' : 'cardCode',  
+        'table': 'cardCode'
+        'opponent' : {'card':'cardCode', 'player':'playerId'}
+      }
+    */
+    try{
+      $game = $this->gameService->findBydId($id); 
+      if (null === $game){
+        throw $this->createNotFoundException('Game not found');
+      }
+      $this->gameService->playCards($game, $this->getUser(), json_decode($request->getContent(),true));
+      $response = new Response(null,200,['Content-type' => 'text/vnd.turbo-stream.html']);
+      return $this->render('game/playcards.stream.html.twig',[],$response);
     }catch(MemoryException $e){
       $this->addFlash('error' , 'game is unplayable due to memory exception !!!');
       return $this->redirectToRoute('app_game_list');

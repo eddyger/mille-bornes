@@ -10,11 +10,15 @@ class AllocatedCard implements JsonSerializable {
 
   protected CardType $type;
   protected string $code;
+  protected int $distance;
   
   public function __construct(Card $card){
     $this->code = $card->getCode();
     $this->type = $card->getType();
-  }
+    if (null !== $card->getDistance()){
+      $this->distance = $card->getDistance();
+    }
+   }
 
   public function __toString()
   {
@@ -27,6 +31,10 @@ class AllocatedCard implements JsonSerializable {
 
   public function getType(): CardType{
     return $this->type;
+  }
+
+  public function getDistance(): int{
+    return $this->distance;
   }
 
   public function jsonSerialize() {

@@ -13,13 +13,15 @@
 {% endif %}
 
 {% if engine is defined %}
-  <p>
-  <turbo-frame id='button-take-card-frame'>
-    <a href="{{ path('app_game_take_card_in_deck', {id: game.id}) }}" id="button-take-card" class="button is-primary">Take card in deck</a>  
-  </turbo>
-  
-  </p>
-  
+{% set currentPlayer = engine.getCurrentPlayer() %}
+  {% if currentPlayer.id == app.user.id and currentPlayer.getCardInHands()|length < 7 %}
+    <p>
+    <turbo-frame id='button-take-card-frame'>
+      <a href="{{ path('app_game_take_card_in_deck', {id: game.id}) }}" id="button-take-card" class="button is-primary">Take card in deck</a>  
+    </turbo>
+    </p>
+  {% endif %}
+    
   {% for player in engine.players %}
     <div class="card">
       <header class="card-header">
@@ -36,7 +38,7 @@
          
           {% for card in player.getCardInHands() %}
             <div class="{{ app.user.id == player.id ? 'dropzone draggable-dropzone--occupied' : ''}}">
-              <div class="item">
+              <div class="item" data-code={{card}}>
             ---{{ app.user.id == player.id ? card : 'BACK CARD' }}---
               </div>
             </div> 
@@ -50,14 +52,24 @@
       </div>    
     </div>
   {% endfor %}
-  <div class="container">
-    <div class="dropzone table"></div>
-  </div>
-  <div class="container">
-    <div class="dropzone trash">
-    <img src="{{ asset('build/images/trash.png')}}" />
+  <turbo-frame id="play-zone">
+    <div class="container">
+      <div id='table' class="dropzone table"></div>
     </div>
-  </div>
+    <div class="container">
+      <div id='trash' class="dropzone trash">
+      <img src="{{ asset('build/images/trash.png')}}" />
+      </div>
+    </div>
+  </turbo>
+
+  {% if currentPlayer.id == app.user.id %}
+    <p>
+    <turbo-frame id='button-play-frame'>
+      <a href="{{ path('app_game_play_cards', {id: game.id}) }}" id="button-play-cards" class="button is-primary" data-turbo="false">Play the cards</a>  
+    </turbo>
+    </p>
+  {% endif %}
   
 {% endif %}
 

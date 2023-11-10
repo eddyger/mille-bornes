@@ -6,7 +6,9 @@ use App\DTO\AllocatedCard;
 use App\Entity\Game;
 use App\Exception\CardNotFoundException;
 use App\Exception\NotPlayerTurnException;
+use App\Exception\PlayerNotFoundException;
 use App\Exception\TooManyCardsInHandsException;
+use Exception;
 
 class GameEngine {
 
@@ -17,7 +19,7 @@ class GameEngine {
   protected $players = [];
   protected $distributedCards;
 
-  protected int $currentPlayer;
+  protected int $currentPlayerIndex;
   
 
   public function __construct(Game $game, array $cardsDeck, array $distributedCards){
@@ -32,11 +34,11 @@ class GameEngine {
       $player = new Player($p->getId(), $this->distributedCards[$p->getId()]);
       $this->players[] = $player;
     }
-    $this->currentPlayer = 0;
+    $this->currentPlayerIndex = 0;
   }
 
   public function getCurrentPlayer(): Player{
-    return $this->players[$this->currentPlayer];
+    return $this->players[$this->currentPlayerIndex];
   }
 
   public function gameIsOver(): bool{
@@ -69,12 +71,73 @@ class GameEngine {
     }
     throw new NotPlayerTurnException();
   }
+  
+  /**
+   * play the cards for current player and return next player
+   */
+  public function playCards(int $playerId, array $played): Player{
+    $currentPlayer = $this->getCurrentPlayer();
+    if ($currentPlayer->getId() === $playerId){
+      /* Json body : {
+        'trash' : 'cardCode',  
+        'table': 'cardCode'
+        'opponent' : {'card':'cardCode', 'player':'playerId'}
+       }
+      */
+      if (isset($played['trash'])){
+        $this->trashCard($playerId, $played['trash']);
+      }
+      
+      if (isset($played['table'])){
+        $this->putCardInTable($playerId, $played['table']);
+      }
 
-  public function trashCard(int $playerId, string $cardCode): void{
+      if (isset($played['opponent']['card'])){
+        $cardCode = $played['opponent']['card'];
+        $card = $currentPlayer->removeCardInHand($cardCode);
+        $opponent = $this->findPlayerById($played['opponent']['player']);
+        $opponent->setAttackByOpponent($card);
+      }
+
+      // Change player
+      $this->currentPlayerIndex++;
+      if ($this->currentPlayerIndex >= \count($this->players)){
+        $this->currentPlayerIndex = 0;
+      }
+
+      return $this->getCurrentPlayer();
+      
+    }else {
+      throw new NotPlayerTurnException();
+    }
+  }
+
+  protected function findPlayerById(int $playerId): Player{
+    foreach($this->players as $player){
+      if ($player->getId() === $playerId){
+        return $player;
+      }
+    }
+    throw new PlayerNotFoundException();
+  }
+
+  protected function putCardInTable(int $playerId, string $cardCode): void{
+    $currentPlayer = $this->getCurrentPlayer();
+    if ($currentPlayer->getId() === $playerId){
+      $card = $currentPlayer->removeCardInHand($cardCode);
+      $currentPlayer->putCardOnTable($card);
+    }else {
+      throw new NotPlayerTurnException();
+    }
+  }
+
+  protected function trashCard(int $playerId, string $cardCode): void{
     $currentPlayer = $this->getCurrentPlayer();
     if ($currentPlayer->getId() === $playerId){
       $card = $currentPlayer->removeCardInHand($cardCode);
       array_unshift($this->cardsDeck, $card);
+    }else {
+      throw new NotPlayerTurnException();
     }
   }
 

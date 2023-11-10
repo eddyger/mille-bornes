@@ -120,8 +120,7 @@ class GameService {
     }
   }
 
-  public function takeCardInDeck(int $gameId, User $user): AllocatedCard{
-    $game = $this->findBydId($gameId);
+  public function takeCardInDeck(Game $game, User $user): AllocatedCard{
     /** @var Engine $engine  */
     $engine = $this->cache->get('play#'.$game->getId(), function(ItemInterface $item){
       return null;
@@ -138,7 +137,31 @@ class GameService {
     }
     throw new MemoryException();
   }
+  
+  public function playCards(Game $game , User $user,  array $play): void{
+    /** @var Engine $engine  */
+    $engine = $this->cache->get('play#'.$game->getId(), function(ItemInterface $item){
+      return null;
+    });
 
+    if (null !== $engine){
+       $nextPlayer = $engine->playCards($user->getId(), $play);
+       // Save engine state
+       $this->cache->get('play#'.$game->getId(), function(ItemInterface $item) use($engine){
+        return $engine;
+      },INF);
+
+       // We notify next player
+       $this->notifyPlayers($game->getId(),[
+        'event' => 'PlayerHavePlayedEvent',
+        'nextPlayerId' => $nextPlayer->getId()
+      ]); 
+
+
+    }else {
+      throw new MemoryException();
+    }
+  }
   /**
    *
    * @param $cards Card[] 
