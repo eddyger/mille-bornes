@@ -33,6 +33,11 @@ export default class extends Controller {
     }
     var _self = this;
     let pageOnloadHandler = function (){
+      if (_self.alreadyLoad){
+        return;
+      }
+      _self.alreadyLoad = true;
+      
       const droppable = new Droppable(
           document.querySelectorAll('.container'),
           {
