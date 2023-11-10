@@ -16,7 +16,7 @@
     <body>
         <nav class="navbar has-shadow">
             <div class="container">
-                <div class="navbar-brand"><a class="navbar-item" href="../"><img src="" alt="1000 Bornes"/></a>
+                <div class="navbar-brand"><a class="navbar-item" href="{{ path('app_home')}}"><img src="" alt="1000 Bornes"/></a>
                     <div class="navbar-burger burger" data-target="navMenu"><span></span><span></span><span></span></div>
                 </div>
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
