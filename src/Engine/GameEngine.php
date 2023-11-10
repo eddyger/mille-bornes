@@ -84,11 +84,11 @@ class GameEngine {
         'opponent' : {'card':'cardCode', 'player':'playerId'}
        }
       */
-      if (isset($played['trash'])){
+      if (!empty($played['trash'])){
         $this->trashCard($playerId, $played['trash']);
       }
       
-      if (isset($played['table'])){
+      if (!empty($played['table'])){
         $this->putCardInTable($playerId, $played['table']);
       }
 

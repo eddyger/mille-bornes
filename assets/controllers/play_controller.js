@@ -37,7 +37,7 @@ export default class extends Controller {
         return;
       }
       _self.alreadyLoad = true;
-      
+
       const droppable = new Droppable(
           document.querySelectorAll('.container'),
           {
@@ -57,7 +57,7 @@ export default class extends Controller {
       });
 
       // Handle play button
-      const playButton = document.getElementById('button-play-cards');
+      const playButton = document.getElementById('button-play-card');
       if (playButton){
         playButton.addEventListener('click', (event) => {
           event.preventDefault();
@@ -81,11 +81,11 @@ export default class extends Controller {
     */{
     const trashElement = document.getElementById('trash');
     let items = trashElement.getElementsByClassName('item');  
-    const trashCardCode = items.length > 0 ? items[0].dataset.code : ''; 
+    const trashCardCode = items.length > 0 ? items[0].dataset.code : null; 
     
     const tableElement = document.getElementById('table');
     items = tableElement.getElementsByClassName('item');  
-    const tableCardCode = items.length > 0 ? items[0].dataset.code : ''; 
+    const tableCardCode = items.length > 0 ? items[0].dataset.code : null; 
     
 
     let postBody = {

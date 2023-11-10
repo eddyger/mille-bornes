@@ -28,6 +28,7 @@
         <p class="card-header-title">
         PLAYER = {{ player.id }}
         </p>
+        <p>DISTANCE = {{ player.distance }}</p>
       </header>
       <div class="card-content">
         <div class="content">
@@ -66,7 +67,7 @@
   {% if currentPlayer.id == app.user.id %}
     <p>
     <turbo-frame id='button-play-frame'>
-      <a href="{{ path('app_game_play_cards', {id: game.id}) }}" id="button-play-cards" class="button is-primary" data-turbo="false">Play the cards</a>  
+      <a href="{{ path('app_game_play_cards', {id: game.id}) }}" id="button-play-card" class="button is-primary" data-turbo="false">Play the card</a>  
     </turbo>
     </p>
   {% endif %}
