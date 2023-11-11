@@ -30,3 +30,9 @@ RUN npm --version
 RUN pecl install --force redis \
     && rm -rf /tmp/pear \
     && docker-php-ext-enable redis
+
+#------- Xdebug
+RUN pecl install --force xdebug \
+    && docker-php-ext-enable xdebug
+
+COPY ./xdebug.ini  /usr/local/etc/php/conf.d/xdebug.ini

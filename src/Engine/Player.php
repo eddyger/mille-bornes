@@ -97,7 +97,7 @@ class Player{
      if ($card->getType() === CardType::DEFENSE){
         $this->lastCardOnTable = $card;
      }
-     if ($card->getCode() === CardCode::GREEN_LIGHT){
+     if ($card->getCode() === CardCode::GREEN_LIGHT->value){
       $this->blocked = false;
      }
   }
