@@ -92,8 +92,8 @@ class GameController extends AbstractController {
     
   }
 
-  #[Route('/play-cards/{id}', name:'app_game_play_cards', methods:['POST'])]
-  public function playCards(int $id, Request $request): Response {
+  #[Route('/play-card/{id}', name:'app_game_play_card', methods:['POST'])]
+  public function playCard(int $id, Request $request): Response {
     // We can play two cards
     // Case 1: 1 card in trash , 1 card in table
     // Case 2: 1 card in trash , 1 card in opponent table attack
@@ -108,7 +108,7 @@ class GameController extends AbstractController {
       if (null === $game){
         throw $this->createNotFoundException('Game not found');
       }
-      $this->gameService->playCards($game, $this->getUser(), json_decode($request->getContent(),true));
+      $this->gameService->playCard($game, $this->getUser(), json_decode($request->getContent(),true));
       $response = new Response(null,200,['Content-type' => 'text/vnd.turbo-stream.html']);
       return $this->render('game/playcards.stream.html.twig',[],$response);
     }catch(MemoryException $e){

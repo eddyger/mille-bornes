@@ -3,7 +3,12 @@
 namespace App\Engine;
 
 use App\DTO\AllocatedCard;
+use App\Entity\Card;
 use App\Entity\Game;
+use App\Enum\CardCode;
+use App\Enum\CardType;
+use App\Exception\AnomalyException;
+use App\Exception\CannotPlayThisCardException;
 use App\Exception\CardNotFoundException;
 use App\Exception\NotPlayerTurnException;
 use App\Exception\PlayerNotFoundException;
@@ -75,7 +80,7 @@ class GameEngine {
   /**
    * play the cards for current player and return next player
    */
-  public function playCards(int $playerId, array $played): Player{
+  public function playCard(int $playerId, array $played): Player{
     $currentPlayer = $this->getCurrentPlayer();
     if ($currentPlayer->getId() === $playerId){
       /* Json body : {
@@ -124,11 +129,67 @@ class GameEngine {
   protected function putCardInTable(int $playerId, string $cardCode): void{
     $currentPlayer = $this->getCurrentPlayer();
     if ($currentPlayer->getId() === $playerId){
-      $card = $currentPlayer->removeCardInHand($cardCode);
-      $currentPlayer->putCardOnTable($card);
+      if ($this->canPlayOnTable($currentPlayer,$cardCode)){
+        $card = $currentPlayer->removeCardInHand($cardCode);
+        $currentPlayer->putCardOnTable($card);
+      }else{
+        throw new CannotPlayThisCardException();
+      }
     }else {
       throw new NotPlayerTurnException();
     }
+  }
+
+  protected function canPlayOnTable(Player $player , string $cardCode): bool {
+    $card = $player->getCardInHand($cardCode);
+    // 1. Card cannot be an attack
+    if ($card->getType() === CardType::ATTACK){
+      return false;
+    }
+
+    // 2. Card is DEFENSE
+    if ($card->getType() === CardType::DEFENSE){
+      if ($card->getCode() === CardCode::REPAIR->value){
+        return $player->getAttackByOpponentCard()?->getCode() === CardCode::ROAD_ACCIDENT->value;
+      }
+
+      if ($card->getCode() === CardCode::FUEL->value){
+        return $player->getAttackByOpponentCard()?->getCode() === CardCode::OUT_OF_FUEL->value;
+      }
+
+      if ($card->getCode() === CardCode::SPARE_WHEEL->value){
+        return $player->getAttackByOpponentCard()?->getCode() === CardCode::FLAT_TIRE->value;
+      }
+
+      if ($card->getCode() === CardCode::END_OF_SPEED_LIMIT->value){
+        return $player->getAttackByOpponentCard()?->getCode() === CardCode::SPEED_LIMIT->value;
+      }
+      
+      if ($card->getCode() === CardCode::GREEN_LIGHT->value){
+        return $player->getAttackByOpponentCard()?->getCode() === CardCode::RED_LIGHT->value || $player->isFirstPlay();
+      }
+    }
+
+    // 3. Card is weapon
+    if ($card->getType() === CardType::WEAPON){
+      return true;
+    }
+
+    // 4. Card is distance
+    if ($card->getType() === CardType::DISTANCE){
+      $currentAttack = $player->getAttackByOpponentCard();
+      if (null !== $currentAttack){
+        if ($currentAttack->getCode() === CardCode::SPEED_LIMIT->value && $card->getCode() === CardCode::SNAIL){
+          return true;
+        }
+        return false;
+      }else{
+        // No attack
+        return $player->isBlocked();
+      }
+    }
+
+    throw new AnomalyException();
   }
 
   protected function trashCard(int $playerId, string $cardCode): void{

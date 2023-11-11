@@ -138,14 +138,14 @@ class GameService {
     throw new MemoryException();
   }
   
-  public function playCards(Game $game , User $user,  array $play): void{
+  public function playCard(Game $game , User $user,  array $play): void{
     /** @var Engine $engine  */
     $engine = $this->cache->get('play#'.$game->getId(), function(ItemInterface $item){
       return null;
     });
 
     if (null !== $engine){
-       $nextPlayer = $engine->playCards($user->getId(), $play);
+       $nextPlayer = $engine->playCard($user->getId(), $play);
        // Save engine state
        $this->cache->get('play#'.$game->getId(), function(ItemInterface $item) use($engine){
         return $engine;

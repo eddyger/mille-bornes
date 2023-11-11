@@ -3,6 +3,7 @@
 namespace App\Engine;
 
 use App\DTO\AllocatedCard;
+use App\Enum\CardCode;
 use App\Enum\CardType;
 use App\Exception\CardNotFoundException;
 use App\Exception\NotAnAttackException;
@@ -16,6 +17,7 @@ class Player{
   protected array $cardsPlayed;
   protected ?AllocatedCard $lastCardOnTable;
   protected int $id;
+  protected bool $blocked;
   
   public function __construct(int $id, array $initialDistributedCards)
   {
@@ -24,6 +26,8 @@ class Player{
     $this->attackByOpponent = null;
     $this->lastCardOnTable = null;
     $this->distance = 0;
+    $this->weaponOnTable = [];
+    $this->blocked = true; // Player must put a GREEN_LIGHT to move forward
   }
 
   public function getDistance() : int {
@@ -53,24 +57,48 @@ class Player{
   
   }
 
+  public function getCardInHand(string $cardCode): AllocatedCard {
+    foreach($this->cardInHands as $key => $card){
+      if ((string)$card === $cardCode){
+        return $card;
+      }
+    }
+   throw new CardNotFoundException();
+  
+  }
+
   public function setAttackByOpponent(AllocatedCard $card): void{
     if ($card->getType() === CardType::ATTACK){
       $this->attackByOpponent = $card;
+      $this->blocked = true;
     }
     else {
       throw new NotAnAttackException();
     }
   }
 
+  public function getAttackByOpponentCard(): ?AllocatedCard{
+    return $this->attackByOpponent;
+  }
+
   public function isBlocked(): bool{
-    return $this->attackByOpponent !== null;
+    return $this->blocked;
   }
 
   public function putCardOnTable(AllocatedCard $card): void {
      $this->cardsPlayed[] = $card;
-     $this->lastCardOnTable = $card;
      if ($card->getType() === CardType::DISTANCE){
+        $this->lastCardOnTable = $card;
         $this->distance += $card->getDistance();
+     }
+     if ($card->getType() === CardType::WEAPON){
+        $this->weaponOnTable[] = $card;
+     }
+     if ($card->getType() === CardType::DEFENSE){
+        $this->lastCardOnTable = $card;
+     }
+     if ($card->getCode() === CardCode::GREEN_LIGHT){
+      $this->blocked = false;
      }
   }
 
@@ -78,4 +106,7 @@ class Player{
     return $this->lastCardOnTable;
   }
   
+  public function isFirstPlay(): bool{
+    return \count($this->cardsPlayed) === 0;
+  }
 }
