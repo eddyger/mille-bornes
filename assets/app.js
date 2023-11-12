@@ -13,3 +13,4 @@ import 'bulma';
 import './styles/prism.css';
 import './styles/cheatsheet.css';
 import './styles/play.css';
+import './styles/spinner.css';

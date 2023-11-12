@@ -33,6 +33,7 @@ export default class extends Controller {
     }
     var _self = this;
     let pageOnloadHandler = function (){
+      document.getElementById('spinner').classList.remove('show');
       if (_self.alreadyLoad){
         return;
       }
@@ -69,7 +70,9 @@ export default class extends Controller {
 
     document.addEventListener('DOMContentLoaded', pageOnloadHandler);
     document.addEventListener('turbo:load', pageOnloadHandler);
-
+    document.addEventListener('turbo:before-fetch-request', () => document.getElementById('spinner').classList.add('show'));
+    document.addEventListener('turbo:before-stream-render', () => document.getElementById('spinner').classList.remove('show'));
+    
    }
 
   async playCards(url)

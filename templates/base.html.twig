@@ -15,6 +15,9 @@
         {% endblock %}
     </head>
     <body>
+        <div id="spinner">
+            <img src="{{ asset('build/images/ajax-loader.gif')}}" />
+        </div>
         <nav class="navbar has-shadow">
             <div class="container">
                 <div class="navbar-brand"><a class="navbar-item" href="{{ path('app_home')}}"><img src="{{ asset('build/images/logo.png')}}" alt="1000 Bornes"/></a>
