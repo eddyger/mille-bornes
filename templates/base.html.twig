@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="turbo-cache-control" content="no-cache">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
@@ -16,55 +17,50 @@
     <body>
         <nav class="navbar has-shadow">
             <div class="container">
-                <div class="navbar-brand"><a class="navbar-item" href="{{ path('app_home')}}"><img src="" alt="1000 Bornes"/></a>
+                <div class="navbar-brand"><a class="navbar-item" href="{{ path('app_home')}}"><img src="{{ asset('build/images/logo.png')}}" alt="1000 Bornes"/></a>
                     <div class="navbar-burger burger" data-target="navMenu"><span></span><span></span><span></span></div>
                 </div>
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                 <div class="navbar-menu" id="navMenu">
+                        <div class="navbar">
+                            <div class="navbar-item"><a href="{{path('app_game_new')}}">Nouveau</a></div>
+                            <div class="navbar-item"><a href="{{path('app_game_list')}}">Browse</a></div>
+                        </div>
                         <div class="navbar-end">
+                            
                             <div class="navbar-item has-dropdown is-hoverable"><a class="navbar-link">{{app.user.email}}({{app.user.id}})</a>
                                 <div class="navbar-dropdown">
                                     <a class="navbar-item">Dashboard</a>
                                     <a class="navbar-item">Profile</a>
                                     <a class="navbar-item">Settings</a>
                                     <hr class="navbar-divider" />
-                                    <div class="navbar-item">Logout</div>
+                                    <div class="navbar-item"><a href="{{path('app_logout')}}">Logout</a></div>
                                 </div>
                             </div>
                         </div>
                 </div>
+                {% else %}
+                <div class="navbar-menu" id="navMenu">
+                        <div class="navbar-end">
+                            <div class="navbar-item"><a href="{{path('app_login')}}">Login</a></div>
+                            <div class="navbar-item"><a href="{{path('app_register')}}">Register</a></div>
+                        </div>
+                </div>
+                    
                 {% endif %}
 
             </div>
         </nav>
-        <section class="hero is-primary">
-        <div class="hero-body">
-            <div class="columns">
-            <div class="column is-12">
-                <div class="container content">
-                <i class="is-large fab fa-discord"></i>
-                <i class="is-large fas fa-code"></i>
-                <h1 class="title">1000 <em>bornes</em></h1>
-                </div>
-            </div>
-            </div>
-        </div>
-        </section>
         <nav class="breadcrumb" aria-label="breadcrumbs">
             <ul>
         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-            <li><a href="{{path('app_game_new')}}">Nouveau</a></li>
-            <li><a href="{{path('app_game_list')}}">Browse</a></li>
-            {% else %}
-            <li><a href="{{path('app_login')}}">Login</a></li>
-            <li><a href="{{path('app_register')}}">Register</a></li>
         {% endif %} 
             </ul>
         </nav>
         <section class="section">
             <div class="container">
-                <div class="columns">
-        {% block body %}{% endblock %}
+                <div class="columns is-multiline">
+                {% block body %}{% endblock %}
                 </div>
             </div>    
         </section>

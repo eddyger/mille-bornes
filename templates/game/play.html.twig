@@ -1,8 +1,11 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-
-<p> play game {{ game.name}}</p>
+<div class="column is-12">
+  <div class="columns is-multiline">
+    <div class="column is-12">
+      play game {{ game.name}}
+    </div>
 
 <p> Nb players <span id='nb-players' data-start-url='{{ path('app_game_start', {id: game.id}) }}'>{{ game.players | length}}</span></p>
 {% if game.owner.id == app.user.id and game.state == 'open'  %}
@@ -14,21 +17,38 @@
 
 {% if engine is defined %}
 {% set currentPlayer = engine.getCurrentPlayer() %}
-  {% if currentPlayer.id == app.user.id and currentPlayer.getCardInHands()|length < 7 %}
-    <p>
-    <turbo-frame id='button-take-card-frame'>
-      <a href="{{ path('app_game_take_card_in_deck', {id: game.id}) }}" id="button-take-card" class="button is-primary">Take card in deck</a>  
-    </turbo>
-    </p>
-  {% endif %}
-    
   {% for player in engine.players %}
+  <div class="column is-4-desktop is-6-tablet">
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">
-        PLAYER = {{ player.id }}
+        {% if app.user.id != player.id %}
+          PLAYER = {{ player.id }}
+        {% endif %}
+        {% if currentPlayer.id == app.user.id and currentPlayer.id == player.id and currentPlayer.getCardInHands()|length < 7 %}
+          <turbo-frame id='button-take-card-frame'>
+            <a href="{{ path('app_game_take_card_in_deck', {id: game.id}) }}" id="button-take-card" class="button is-primary">Take card in deck</a>  
+          </turbo>
+        {% endif %}
         </p>
         <p>DISTANCE = {{ player.distance }}</p>
+        {% if player.id == app.user.id %}        
+          <turbo-frame id="play-zone">
+            <div class="container">
+              <div id='table' class="dropzone table"></div>
+            </div>
+            <div class="container">
+              <div id='trash' class="dropzone trash">
+              <!--<img src="{{ asset('build/images/trash.png')}}" />-->
+              </div>
+            </div>
+          </turbo>
+          {% if currentPlayer.id == app.user.id %}
+          <turbo-frame id='button-play-frame'>
+            <a href="{{ path('app_game_play_card', {id: game.id}) }}" id="button-play-card" class="button is-primary" data-turbo="false">Play the card</a>  
+          </turbo>
+          {% endif %}
+        {% endif %}
       </header>
       <div class="card-content">
         <div class="content">
@@ -52,32 +72,18 @@
         </div>
       </div>    
     </div>
+  </div>  
   {% endfor %}
-  <turbo-frame id="play-zone">
-    <div class="container">
-      <div id='table' class="dropzone table"></div>
-    </div>
-    <div class="container">
-      <div id='trash' class="dropzone trash">
-      <!--<img src="{{ asset('build/images/trash.png')}}" />-->
-      </div>
-    </div>
-  </turbo>
-
-  {% if currentPlayer.id == app.user.id %}
-    <p>
-    <turbo-frame id='button-play-frame'>
-      <a href="{{ path('app_game_play_card', {id: game.id}) }}" id="button-play-card" class="button is-primary" data-turbo="false">Play the card</a>  
-    </turbo>
-    </p>
-  {% endif %}
   
 {% endif %}
 
 
 
-<div data-controller="play-controller" data-play-controller-url-value="{{ mercure(['#play-'~ game.id]) }}" data-play-controller-user-value="{{ app.user.id }}">
-  <!-- ... -->
+    <div data-controller="play-controller" data-play-controller-url-value="{{ mercure(['#play-'~ game.id]) }}" data-play-controller-user-value="{{ app.user.id }}">
+      <!-- ... -->
+    </div>
+
+  </div>
 </div>
 
 {% endblock %}
