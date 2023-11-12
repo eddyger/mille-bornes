@@ -166,7 +166,7 @@ class GameEngine {
       }
       
       if ($card->getCode() === CardCode::GREEN_LIGHT->value){
-        return $player->getAttackByOpponentCard()?->getCode() === CardCode::RED_LIGHT->value || $player->isBlocked();
+        return $player->getAttackByOpponentCard()?->getCode() === CardCode::RED_LIGHT->value || ($player->getAttackByOpponentCard() === null && $player->isBlocked());
       }
     }
 

@@ -93,8 +93,11 @@ class Player{
      }
      if ($card->getType() === CardType::WEAPON){
         $this->weaponOnTable[] = $card;
+        // TODO Handle remove current attack switch WEAPON
      }
      if ($card->getType() === CardType::DEFENSE){
+        // remove current attack
+        $this->attackByOpponent = null;
         $this->lastCardOnTable = $card;
      }
      if ($card->getCode() === CardCode::GREEN_LIGHT->value){

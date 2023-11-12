@@ -39,10 +39,16 @@
             </div>
             <div class="container">
               <div id='trash' class="dropzone trash">
-              <!--<img src="{{ asset('build/images/trash.png')}}" />-->
+                <img src="{{ asset('build/images/trash.png')}}" />
               </div>
             </div>
           </turbo>
+          {% if player.getAttackByOpponentCard() is not null %}
+              <div class="container">
+                <div>UNDER ATTACK ->{{player.getAttackByOpponentCard()}}<-</div>
+              </div>
+          {% endif %}
+          
           {% if currentPlayer.id == app.user.id %}
           <turbo-frame id='button-play-frame'>
             <a href="{{ path('app_game_play_card', {id: game.id}) }}" id="button-play-card" class="button is-primary" data-turbo="false">Play the card</a>  
@@ -55,17 +61,26 @@
          <div class="container">
          {% if app.user.id == player.id %}
          <turbo-frame id='player-cards'>
-         {% endif %}
-         
           {% for card in player.getCardInHands() %}
             <div class="{{ app.user.id == player.id ? 'dropzone draggable-dropzone--occupied' : ''}}">
               <div class="item" data-code='{{card}}'>
-            ---{{ app.user.id == player.id ? card : 'BACK CARD' }}---
+            ---{{card}}---
               </div>
             </div> 
           {% endfor %}
-           {% if app.user.id == player.id %}
          </turbo-frame>
+         {% else %}
+          <turbo-frame id="attack-zone-{{player.id}}-frame">
+            {% if player.getAttackByOpponentCard() is not null %}
+              <div class="container">
+                <div>YOU CANNOT ATTACK {{ player.id}}->{{player.getAttackByOpponentCard()}}<-</div>
+              </div>
+            {% else %}
+              <div class="container">
+                <div id='attack-zone-{{player.id}}' class="{{currentPlayer.id == app.user.id ? 'dropzone' : ''}} attack" data-playerId="{{player.id}}">YOU CAN ATTACK {{ player.id}}</div>
+              </div>
+            {% endif %}
+          </turbo>
          {% endif %}
         
          </div> 

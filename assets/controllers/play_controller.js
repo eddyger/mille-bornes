@@ -86,11 +86,25 @@ export default class extends Controller {
     const tableElement = document.getElementById('table');
     items = tableElement.getElementsByClassName('item');  
     const tableCardCode = items.length > 0 ? items[0].dataset.code : null; 
-    
 
     let postBody = {
       trash : trashCardCode,
       table : tableCardCode
+    }
+
+    // try to get attack card for an opponent
+    let dropZone;
+    const dropZoneAttackElements = document.getElementsByClassName("dropzone attack");
+    for (let i = 0 ; i < dropZoneAttackElements.length ; i++){
+      dropZone = dropZoneAttackElements.item(i);
+      items = dropZone.getElementsByClassName('item');
+      if (items.length > 0){
+        postBody.opponent = {
+            card : items[0].dataset.code,
+            player : dropZone.dataset.playerid
+        }
+        break;
+      }
     }
     
     const response = await fetch(url,{
@@ -101,7 +115,6 @@ export default class extends Controller {
     const text = await response.text();
     Turbo.renderStreamMessage(text);
       
-    console.log(url);
   }
 
   disconnect() {
