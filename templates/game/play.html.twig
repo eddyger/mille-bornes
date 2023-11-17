@@ -1,104 +1,141 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-<div class="column is-12">
-  <div class="columns is-multiline">
-    <div class="column is-12">
-      play game {{ game.name}}
-    </div>
-
-<p> Nb players <span id='nb-players' data-start-url='{{ path('app_game_start', {id: game.id}) }}'>{{ game.players | length}}</span></p>
-{% if game.owner.id == app.user.id and game.state == 'open'  %}
-{% set nbPlayers = game.players|length %}
-  <p>
-    <a href="{{ path('app_game_start', {id: game.id}) }}" id="button-start-game" class="button is-primary" {{ nbPlayers < 2 ? 'disabled="disabled"' : '' }}>Start</a>  
-  </p>
-{% endif %}
-
 {% if engine is defined %}
+{% set myPlayer = none %}
+{% for player in engine.players %}
+  {% if player.id == app.user.id %}
+   {% set myPlayer = player %} 
+  {% endif %}
+{% endfor %}
 {% set currentPlayer = engine.getCurrentPlayer() %}
-  {% for player in engine.players %}
-  <div class="column is-4-desktop is-6-tablet">
-    <div class="card">
-      <header class="card-header">
-        <p class="card-header-title">
-        {% if app.user.id != player.id %}
-          PLAYER = {{ player.id }}
-        {% endif %}
-        {% if currentPlayer.id == app.user.id and currentPlayer.id == player.id and currentPlayer.getCardInHands()|length < 7 %}
-          <turbo-frame id='button-take-card-frame'>
-            <a href="{{ path('app_game_take_card_in_deck', {id: game.id}) }}" id="button-take-card" class="button is-primary">Take card in deck</a>  
-          </turbo>
-        {% endif %}
-        </p>
-        <p>DISTANCE = {{ player.distance }}</p>
-        {% if player.id == app.user.id %}        
-          <turbo-frame id="play-zone">
-            <div class="container">
-              <div id='table' class="dropzone table"></div>
+<div class="container">
+    <div class="columns">
+        <div class="column is-half">
+            <div class="tile is-ancestor has-text-centered">
+                <div class="tile is-parent">
+                    <article class="tile is-child box">
+                        <p class="title">{{myPlayer.distance}}km</p>
+                        <p class="subtitle">ME</p>
+                    </article>
+                </div>
+                {% if myPlayer.getAttackByOpponentCard() is not null %}
+                  <div class="tile is-parent">
+                    <article class="tile is-child box">
+                        <figure class="image is-64x64">
+                            <img src="{{asset('build/images/'~ myPlayer.getAttackByOpponentCard() ~ '.png')}}" alt="{{myPlayer.getAttackByOpponentCard()}}">
+                        </figure>
+                    </article>
+                  </div>  
+                {% endif %}
             </div>
-            <div class="container">
-              <div id='trash' class="dropzone trash">
-                <img src="{{ asset('build/images/trash.png')}}" />
-              </div>
+            {% if currentPlayer.id == myPlayer.id %}
+            <div class="tile is-ancestor has-text-centered">
+                <div class="tile is-parent">
+                    <article class="tile is-child box">
+                        {% if currentPlayer.getCardInHands()|length < 7 %}
+                        <turbo-frame id='button-take-card-frame' class="tile">
+                          <p class="title">
+                            <a href="{{ path('app_game_take_card_in_deck', {id: game.id}) }}" id="button-take-card" class="button is-primary">Take card</a>  
+                          </p>
+                        </turbo-frame>
+                        {% endif %}  
+                        <turbo-frame id='button-play-frame'>
+                          <a href="{{ path('app_game_play_card', {id: game.id}) }}" id="button-play-card" class="button is-primary" data-turbo="false">Play the card</a>  
+                        </turbo-frame>
+                    </article>
+                </div>
             </div>
-          </turbo>
-          {% if player.getAttackByOpponentCard() is not null %}
-              <div class="container">
-                <div>UNDER ATTACK ->{{player.getAttackByOpponentCard()}}<-</div>
-              </div>
-          {% endif %}
-          
-          {% if currentPlayer.id == app.user.id %}
-          <turbo-frame id='button-play-frame'>
-            <a href="{{ path('app_game_play_card', {id: game.id}) }}" id="button-play-card" class="button is-primary" data-turbo="false">Play the card</a>  
-          </turbo>
-          {% endif %}
-        {% endif %}
-      </header>
-      <div class="card-content">
-        <div class="content">
-         <div class="container">
-         {% if app.user.id == player.id %}
-         <turbo-frame id='player-cards'>
-          {% for card in player.getCardInHands() %}
-            <div class="{{ app.user.id == player.id ? 'dropzone draggable-dropzone--occupied' : ''}}">
-              <div class="item" data-code='{{card}}'>
-            ---{{card}}---
-              </div>
-            </div> 
-          {% endfor %}
-         </turbo-frame>
-         {% else %}
-          <turbo-frame id="attack-zone-{{player.id}}-frame">
-            {% if player.getAttackByOpponentCard() is not null %}
-              <div class="container">
-                <div>YOU CANNOT ATTACK {{ player.id}}->{{player.getAttackByOpponentCard()}}<-</div>
-              </div>
-            {% else %}
-              <div class="container">
-                <div id='attack-zone-{{player.id}}' class="{{currentPlayer.id == app.user.id ? 'dropzone' : ''}} attack" data-playerId="{{player.id}}">YOU CAN ATTACK {{ player.id}}</div>
-              </div>
             {% endif %}
-          </turbo>
-         {% endif %}
-        
-         </div> 
+            <div class="columns is-multiline">
+                <div class="column">
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                            <div class="container">
+                              <div id='weapon' class="dropzone weapon"></div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                            <div class="container">
+                              <div id='table' class="dropzone table"></div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                          <turbo-frame id="trash-zone">
+                            <div class="container">
+                              <div id='trash' class="dropzone trash">
+                                <!--<img src="{{ asset('build/images/trash.png')}}" />-->
+                              </div>
+                            </div>
+                          </turbo-frame>
+                        </article>
+                    </div>
+                </div>
+                
+                <div class="tile is-ancestor has-text-centered">
+                  <div class="tile is-parent">
+                      <turbo-frame id="player-cards">
+                      {% for card in myPlayer.getCardInHands() %}
+                        <div class="tile is-child dropzone draggable-dropzone--occupied">
+                            <article class="item tile is-child" data-code='{{card}}'>
+                                <figure class="image is-64x64">
+                                    <img src="{{asset('build/images/'~ card ~ '.png')}}" alt="{{card}}">
+                                </figure>
+                            </article>
+                        </div>
+                      {% endfor %}
+                      </turbo-frame>
+                  </div>
+                </div>
+            </div>
         </div>
-      </div>    
+        <div class="column is-half">
+            <div class="container">
+            {% for player in engine.players %}
+                {% if player.id != app.user.id %}
+                  <div class="tile is-ancestor has-text-centered player-box">
+                      <div class="tile is-parent">
+                          <article class="tile is-child box">
+                              <p class="title">{{player.distance}}km</p>
+                              <p class="subtitle">PLAYER {{player.id}}</p>
+                          </article>
+                      </div>
+                      <turbo-frame id="attack-zone-{{player.id}}-frame">
+                        {% if player.getAttackByOpponentCard() is not null %}
+                          <div class="tile is-parent">
+                            <article class="tile is-child box">
+                              <figure class="image is-64x64">
+                                <img src="{{asset('build/images/'~ player.getAttackByOpponentCard() ~ '.png')}}" alt="{{player.getAttackByOpponentCard()}}">
+                              </figure>
+                            </article>
+                          </div>
+                        {% else %}
+                          <div class="tile is-parent">
+                            <article class="tile is-child box">
+                              <div id='attack-zone-{{player.id}}' class="{{currentPlayer.id == app.user.id ? 'dropzone' : ''}} attack" data-playerId="{{player.id}}">YOU CAN ATTACK {{ player.id}}</div>
+                            </article>
+                          </div>
+                        {% endif %}
+                      </turbo-frame>
+                  </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </div>
     </div>
-  </div>  
-  {% endfor %}
-  
+</div>
 {% endif %}
 
-
-
-    <div data-controller="play-controller" data-play-controller-url-value="{{ mercure(['#play-'~ game.id]) }}" data-play-controller-user-value="{{ app.user.id }}">
-      <!-- ... -->
-    </div>
-
+  <div data-controller="play-controller" data-play-controller-url-value="{{ mercure(['#play-'~ game.id]) }}" data-play-controller-user-value="{{ app.user.id }}">
+    <!-- ... -->
   </div>
-</div>
 
 {% endblock %}

@@ -1,10 +1,12 @@
 <turbo-stream action="append" target="player-cards">
   <template>
-    <div class="dropzone draggable-dropzone--occupied">
-      <div class="item" data-code='{{card}}'>
-        ---{{ card }}---
-      </div>
-    </div> 
+  <div class="tile is-parent dropzone draggable-dropzone--occupied">
+      <article class="item tile is-child" data-code="{{card}}">
+          <figure class="image is-64x64">
+              <img src="{{asset('build/images/' ~ card ~ '.png')}}" alt="{{card}}" />
+          </figure>
+      </article>
+  </div>
   </template>
 </turbo-stream>
 
