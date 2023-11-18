@@ -18,6 +18,13 @@ turbo-frame {
   width: 128px;
 }
 
+.trash{
+  background-image: url('../images/trash.png');
+  background-position: center;
+  background-size: 50%;
+  background-repeat: no-repeat;;
+}
+
 .player-box{
   border: 1px solid #0F1D38;
 }

@@ -12,6 +12,9 @@ class Player{
 
   protected int $distance;
   protected array $cardInHands;
+  /**
+   * Array<AllocatedCard>
+   */
   protected array $weaponOnTable;
   protected ?AllocatedCard $attackByOpponent;
   protected array $cardsPlayed;
@@ -93,7 +96,10 @@ class Player{
      }
      if ($card->getType() === CardType::WEAPON){
         $this->weaponOnTable[] = $card;
-        // TODO Handle remove current attack switch WEAPON
+        if ($this->hasWeaponForAttack((string)$card)){
+          $this->attackByOpponent = null;
+          $this->blocked = false; // No need GREEN_LIGHT to move forward
+        }
      }
      if ($card->getType() === CardType::DEFENSE){
         // remove current attack
@@ -112,4 +118,34 @@ class Player{
   public function isFirstPlay(): bool{
     return \count($this->cardsPlayed) === 0;
   }
+
+  /**
+   * @throw NotAnAttackException
+   */
+  public function hasWeaponForAttack(string $cardCode){
+    $weaponByAttack = [
+      CardCode::RED_LIGHT->value => CardCode::TOP_PRIORITY->value,
+      CardCode::SPEED_LIMIT->value => CardCode::TOP_PRIORITY->value,
+      CardCode::OUT_OF_FUEL->value => CardCode::FUEL_TANKER->value,
+      CardCode::FLAT_TIRE->value => CardCode::PUNCTURE_PROOF->value,
+      CardCode::ROAD_ACCIDENT->value => CardCode::ACE_DRIVER->value,
+    ];
+    
+    if (!isset($weaponByAttack[$cardCode])){
+      throw new NotAnAttackException();
+    }
+
+    $searchedWeapon = $weaponByAttack[$cardCode];
+    foreach($this->weaponOnTable as $weaponCard){
+        if ((string)$weaponCard === $searchedWeapon){
+          return true;
+        }
+    }
+    return false;
+  }
+
+  public function getWeaponOnTable(): array{
+    return $this->weaponOnTable;
+  }
+
 }

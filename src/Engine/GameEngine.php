@@ -99,9 +99,11 @@ class GameEngine {
 
       if (isset($played['opponent']['card'])){
         $cardCode = $played['opponent']['card'];
-        $card = $currentPlayer->removeCardInHand($cardCode);
         $opponent = $this->findPlayerById($played['opponent']['player']);
-        $opponent->setAttackByOpponent($card);
+        if ($this->canAttackPlayer($opponent, $cardCode)){
+          $card = $currentPlayer->removeCardInHand($cardCode);
+          $opponent->setAttackByOpponent($card); 
+        }
       }
 
       // Change player
@@ -115,6 +117,17 @@ class GameEngine {
     }else {
       throw new NotPlayerTurnException();
     }
+  }
+
+  protected function canAttackPlayer(Player $player , string $cardCode): bool{
+    // Two checks : first the opponent must not be currently attacked
+    if ($player->getAttackByOpponentCard() === null){
+        // secondly the opponent must not have the weapon that protect him from the attack
+        if (!$player->hasWeaponForAttack($cardCode)){
+          return true;
+        }
+    }
+    return false;
   }
 
   protected function findPlayerById(int $playerId): Player{

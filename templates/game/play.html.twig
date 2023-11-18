@@ -54,7 +54,13 @@
                     <div class="tile is-parent">
                         <article class="tile is-child box">
                             <div class="container">
-                              <div id='weapon' class="dropzone weapon"></div>
+                              <div id='weapon' class="weapon">
+                              {% for card in myPlayer.getWeaponOnTable() %}
+                                <figure class="image is-64x64">
+                                    <img src="{{asset('build/images/'~ card ~ '.png')}}" alt="{{card}}">
+                                </figure>
+                              {% endfor %}
+                              </div>
                             </div>
                         </article>
                     </div>
@@ -109,6 +115,13 @@
                               <p class="title">{{player.distance}}km</p>
                               <p class="subtitle">PLAYER {{player.id}}</p>
                           </article>
+                      </div>
+                      <div class="tile is-parent">
+                      {% for card in player.getWeaponOnTable() %}
+                        <figure class="image is-64x64">
+                            <img src="{{asset('build/images/'~ card ~ '.png')}}" alt="{{card}}">
+                        </figure>
+                      {% endfor %}
                       </div>
                       <turbo-frame id="attack-zone-{{player.id}}-frame">
                         {% if player.getAttackByOpponentCard() is not null %}
