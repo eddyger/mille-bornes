@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Exception\CannotPlayThisCardException;
 use App\Exception\GameAlreadyStartException;
 use App\Exception\MaxPlayerReachedException;
 use App\Exception\MemoryException;
+use App\Exception\NotAnAttackException;
 use App\Form\NewGameFormType;
 use App\Service\GameService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -94,9 +96,8 @@ class GameController extends AbstractController {
 
   #[Route('/play-card/{id}', name:'app_game_play_card', methods:['POST'])]
   public function playCard(int $id, Request $request): Response {
-    // We can play two cards
-    // Case 1: 1 card in trash , 1 card in table
-    // Case 2: 1 card in trash , 1 card in opponent table attack
+    // We can play only one card
+    // 1 card in trash or 1 card on the table or one attack card to opponent table
     /* Json body : {
         'trash' : 'cardCode',  
         'table': 'cardCode'
@@ -110,10 +111,13 @@ class GameController extends AbstractController {
       }
       $this->gameService->playCard($game, $this->getUser(), json_decode($request->getContent(),true));
       $response = new Response(null,200,['Content-type' => 'text/vnd.turbo-stream.html']);
-      return $this->render('game/playcards.stream.html.twig',[],$response);
+      return $this->render('game/playcard.stream.html.twig',[],$response);
     }catch(MemoryException $e){
       $this->addFlash('error' , 'game is unplayable due to memory exception !!!');
       return $this->redirectToRoute('app_game_list');
+    }catch(CannotPlayThisCardException|NotAnAttackException $e){
+      $response = new Response(null,200,['Content-type' => 'text/vnd.turbo-stream.html']);
+      return $this->render('game/cantplaythiscard.stream.html.twig',[],$response);
     }
     
   }
