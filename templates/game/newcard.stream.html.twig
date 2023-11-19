@@ -1,6 +1,6 @@
 <turbo-stream action="append" target="player-cards">
   <template>
-  <div class="tile is-parent dropzone draggable-dropzone--occupied">
+  <div class="tile is-parent dropzone draggable-dropzone--occupied animate__animated animate__bounce animate__delay-2s">
       <article class="item tile is-child" data-code="{{card}}">
           <figure class="image is-64x64">
               <img src="{{asset('build/images/' ~ card ~ '.png')}}" alt="{{card}}" />

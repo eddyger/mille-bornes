@@ -9,6 +9,7 @@ import './bootstrap.js';
 // any CSS you import will output into a single css file (app.css in this case)
 import 'normalize.css';
 import 'bulma/css/bulma.css';
+import 'animate.css';
 
 import './styles/prism.css';
 import './styles/cheatsheet.css';

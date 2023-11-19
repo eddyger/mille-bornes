@@ -21,6 +21,17 @@
                         <p class="subtitle">ME</p>
                     </article>
                 </div>
+                
+                {% if myPlayer.getLastCardOnTable() is not null %}
+                  <div class="tile is-parent">
+                    <article class="tile is-child box">
+                        <p class="lastplayed">Last played</p>
+                        <figure class="image is-64x64">
+                            <img src="{{asset('build/images/'~ myPlayer.getLastCardOnTable() ~ '.png')}}" alt="{{myPlayer.getLastCardOnTable()}}">
+                        </figure>
+                    </article>
+                  </div>  
+                {% endif %}
                 {% if myPlayer.getAttackByOpponentCard() is not null %}
                   <div class="tile is-parent">
                     <article class="tile is-child box">
@@ -38,7 +49,7 @@
                         {% if currentPlayer.getCardInHands()|length < 7 %}
                         <turbo-frame id='button-take-card-frame' class="tile">
                           <p class="title">
-                            <a href="{{ path('app_game_take_card_in_deck', {id: game.id}) }}" id="button-take-card" class="button is-primary">Take card</a>  
+                            <a href="{{ path('app_game_take_card_in_deck', {id: game.id}) }}" id="button-take-card" class="button is-primary animate__animated animate__bounce">Take card</a>  
                           </p>
                         </turbo-frame>
                         {% endif %}  
