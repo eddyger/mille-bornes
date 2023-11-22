@@ -1,6 +1,13 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
+{% if game.owner.id == app.user.id and game.state == 'open'  %}
+{% set nbPlayers = game.players|length %}
+  <p>
+    <a href="{{ path('app_game_start', {id: game.id}) }}" id="button-start-game" class="button is-primary" {{ nbPlayers < 2 ? 'disabled="disabled"' : '' }}>Start</a>  
+  </p>
+{% endif %}
+
 {% if engine is defined %}
 {% set myPlayer = none %}
 {% for player in engine.players %}

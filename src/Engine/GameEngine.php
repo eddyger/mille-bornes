@@ -192,7 +192,7 @@ class GameEngine {
     if ($card->getType() === CardType::DISTANCE){
       $currentAttack = $player->getAttackByOpponentCard();
       if (null !== $currentAttack){
-        if ($currentAttack->getCode() === CardCode::SPEED_LIMIT->value && $card->getCode() === CardCode::SNAIL){
+        if ($currentAttack->getCode() === CardCode::SPEED_LIMIT->value && $card->getCode() === CardCode::SNAIL->value){
           return true;
         }
         return false;

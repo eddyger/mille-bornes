@@ -111,7 +111,7 @@ class Player{
      }
   }
 
-  public function getLastCardOnTable(): AllocatedCard {
+  public function getLastCardOnTable(): ?AllocatedCard {
     return $this->lastCardOnTable;
   }
   
