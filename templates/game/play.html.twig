@@ -1,11 +1,14 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-{% if game.owner.id == app.user.id and game.state == 'open'  %}
+{% if game.state == 'open'  %}
+<p> Number of players <span id='nb-players' data-start-url='{{ path('app_game_start', {id: game.id}) }}'>{{ game.players | length}}</span></p>
 {% set nbPlayers = game.players|length %}
+  {% if game.owner.id == app.user.id %}
   <p>
     <a href="{{ path('app_game_start', {id: game.id}) }}" id="button-start-game" class="button is-primary" {{ nbPlayers < 2 ? 'disabled="disabled"' : '' }}>Start</a>  
   </p>
+  {% endif %}
 {% endif %}
 
 {% if engine is defined %}
