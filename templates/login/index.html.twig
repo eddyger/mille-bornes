@@ -19,11 +19,13 @@
         
         <div class="field">
             <label class="label">Password</label>
-            <div class="control">
-                <input class="input" type="password" id="password" name="_password">
+            <div class="control has-icons-right">
+                <input class="input" type="password" id="password" name="_password" spellcheck="false" 
+                {{ stimulus_controller('symfony/ux-toggle-password/toggle-password', {buttonClasses: ['toggle-password-button']} ) }}
+                />
             </div>
         </div>
-      
+
         {# If you want to control the URL the user is redirected to on success
         <input type="hidden" name="_target_path" value="/account"> #}
         <div class="field is-grouped">

@@ -10,6 +10,7 @@ import './bootstrap.js';
 import 'normalize.css';
 import 'bulma/css/bulma.css';
 import 'animate.css';
+import '@fortawesome/fontawesome-free/css/all.css';
 
 import './styles/prism.css';
 import './styles/cheatsheet.css';
