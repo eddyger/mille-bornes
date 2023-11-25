@@ -97,7 +97,7 @@ class Player{
      }
      if ($card->getType() === CardType::WEAPON){
         $this->weaponOnTable[] = $card;
-        if ($this->hasWeaponForAttack((string)$card)){
+        if ($this->hasWeaponForCurrentAttack()){
           $this->attackByOpponent = null;
           $this->blocked = false; // No need GREEN_LIGHT to move forward
         }
@@ -141,6 +141,28 @@ class Player{
         if ((string)$weaponCard === $searchedWeapon){
           return true;
         }
+    }
+    return false;
+  }
+
+  public function hasWeaponForCurrentAttack(){
+    if ($this->attackByOpponent !== null){
+      $weaponByAttack = [
+        CardCode::RED_LIGHT->value => CardCode::TOP_PRIORITY->value,
+        CardCode::SPEED_LIMIT->value => CardCode::TOP_PRIORITY->value,
+        CardCode::OUT_OF_FUEL->value => CardCode::FUEL_TANKER->value,
+        CardCode::FLAT_TIRE->value => CardCode::PUNCTURE_PROOF->value,
+        CardCode::ROAD_ACCIDENT->value => CardCode::ACE_DRIVER->value,
+      ];
+      
+  
+      $searchedWeapon = $weaponByAttack[$this->attackByOpponent->getCode()];
+      foreach($this->weaponOnTable as $weaponCard){
+          if ((string)$weaponCard === $searchedWeapon){
+            return true;
+          }
+      }
+      
     }
     return false;
   }

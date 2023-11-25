@@ -52,8 +52,8 @@ class GameEngine {
       if ($player->getDistance() === self::DISTANCE_TO_REACH){
         return true;
       }
-      return false;
     }
+    return false;
   }
 
   public function getWinner(): ?Player{
@@ -61,8 +61,8 @@ class GameEngine {
       if ($player->getDistance() === self::DISTANCE_TO_REACH){
         return $player;
       }
-      return null;
     }
+    return null;
   }
 
   public function takeCardInDeck(int $playerId): AllocatedCard{
