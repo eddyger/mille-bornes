@@ -19,6 +19,15 @@
   {% endif %}
 {% endfor %}
 {% set currentPlayer = engine.getCurrentPlayer() %}
+{% set winner = engine.getWinner() %}
+{% if winner is not null %}
+  <div class="winner">
+  {{ winner.username }} has won the game !!!&nbsp;
+  <a href="{{path('app_game_new')}}">Create</a>&nbsp; a new game <br/>
+  <p>&nbsp;or <a href="{{path('app_game_list')}}">Browse</a> all opened game</p>
+  </div>
+{% endif %}
+
 <div class="container">
     <div class="columns">
         <div class="column is-half">
