@@ -20,6 +20,7 @@ class Player{
   protected array $cardsPlayed;
   protected ?AllocatedCard $lastCardOnTable;
   protected int $id;
+  protected string $username;
   protected bool $blocked;
   
   public function __construct(int $id, array $initialDistributedCards)
@@ -148,4 +149,12 @@ class Player{
     return $this->weaponOnTable;
   }
 
+  public function setUsername(string $name): void{
+    $this->username = $name;
+  }
+
+  public function getUsername(): string{
+    return $this->username;
+  }
+  
 }

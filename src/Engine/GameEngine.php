@@ -37,6 +37,7 @@ class GameEngine {
   protected function init(Game $game){
     foreach($game->getPlayers() as $p){
       $player = new Player($p->getId(), $this->distributedCards[$p->getId()]);
+      $player->setUsername($p->getUsername());
       $this->players[] = $player;
     }
     $this->currentPlayerIndex = 0;

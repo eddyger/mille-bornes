@@ -134,7 +134,7 @@
                       <div class="tile is-parent">
                           <article class="tile is-child box">
                               <p class="title">{{player.distance}}km</p>
-                              <p class="subtitle">PLAYER {{player.id}}</p>
+                              <p class="subtitle">{{player.username}}</p>
                           </article>
                       </div>
                       <div class="tile is-parent">
@@ -144,6 +144,16 @@
                         </figure>
                       {% endfor %}
                       </div>
+                      {% if player.getLastCardOnTable() is not null %}
+                        <div class="tile is-parent">
+                          <article class="tile is-child box">
+                              <p class="lastplayed">Last played</p>
+                              <figure class="image is-64x64">
+                                  <img src="{{asset('build/images/'~ player.getLastCardOnTable() ~ '.png')}}" alt="{{player.getLastCardOnTable()}}">
+                              </figure>
+                          </article>
+                        </div>  
+                      {% endif %}
                       <turbo-frame id="attack-zone-{{player.id}}-frame">
                         {% if player.getAttackByOpponentCard() is not null %}
                           <div class="tile is-parent">
