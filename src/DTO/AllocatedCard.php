@@ -37,7 +37,7 @@ class AllocatedCard implements JsonSerializable {
     return $this->distance;
   }
 
-  public function jsonSerialize() {
+  public function jsonSerialize(): mixed {
     return ['code' => $this->code, 'type' => $this->type];
   }
   
