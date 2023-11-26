@@ -18,7 +18,7 @@ export default class extends Controller {
             document.getElementById('nb-players').innerText = nbPlayers;
             let buttonStart = document.getElementById('button-start-game');
             if (nbPlayers >= 2 && buttonStart ){
-              buttonStart.disabled = false;
+              buttonStart.removeAttribute('disabled');
             }
         }
 

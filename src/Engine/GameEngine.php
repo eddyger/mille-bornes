@@ -104,6 +104,8 @@ class GameEngine {
         if ($this->canAttackPlayer($opponent, $cardCode)){
           $card = $currentPlayer->removeCardInHand($cardCode);
           $opponent->setAttackByOpponent($card); 
+        }else{
+          throw new CannotPlayThisCardException();
         }
       }
 
